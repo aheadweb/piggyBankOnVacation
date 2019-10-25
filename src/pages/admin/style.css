@@ -1,0 +1,137 @@
+.main__title_admin {
+    margin-bottom: 40px;
+    margin-top: 20px;
+    position: static;
+    margin-left: 25px;
+}
+
+.mounth_admin {
+    margin-left: 25px;
+}
+
+.admin-card__title {
+    font-size: 40px;
+}
+
+.card__item_admin {
+    max-width: 100%;
+    cursor: pointer;
+    display: flex;
+}
+
+.admin-card__delete img,
+.admin-card__update img {
+
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+
+.admin-card__update {
+    margin-left: 20px;
+}
+
+.admin-card__wrapper {
+    display: flex;
+}
+
+.card_admin .card__title {
+    max-width: 500px;
+}
+
+.card_admin .card__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.card__item_admin {
+    max-width: unset;
+    cursor: pointer;
+    display: flex;
+    flex-basis: 50%;
+    margin-bottom: 15px;
+    flex-direction: column;
+}
+
+.card__item_admin:first-child {
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+.added-list {
+    padding-left: 34px;
+}
+
+.aded-list__btn {
+    background-color: #333;
+    border-radius: 3px;
+    border: 0;
+    color: #fff;
+    padding: 12px 12px;
+    margin-bottom: 10px;
+}
+
+.card__item_admin .card__item  {
+    align-items: center;
+    display: flex;
+}
+
+.card__item_admin .card__item label,
+.admin-card__hidden label {
+    margin-right: 10px;
+}
+
+.card__item_admin .card__item  input,
+.admin-card__hidden input{
+    border: 1px solid #333;
+    border-radius: 20px;
+    padding: 12px;
+    box-sizing: border-box;
+    margin: 12px 0;
+}
+
+.card__item_admin .card__item  button,
+.admin-card__hidden button{
+    background-color: #333;
+    border-radius: 3px;
+    box-sizing: border-box;
+    border: 0;
+    margin-top: 20px;
+    margin-left: 10px;
+    color: #fff;
+    padding: 12px 12px;
+    align-self: center;
+}
+
+
+.admin-card__title,
+.admin-card__udate  {
+    pointer-events: none;
+}
+
+.card__item_admin .card__list,
+.added-list {
+    max-height: 0px;
+    min-height: 0px;
+    transition: all .4s ease-in;
+    will-change: max-height;
+    margin-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+ 
+.card__item_admin .card__list.open {
+    min-height: 600px;
+    opacity: 1;
+    pointer-events: all;
+}
+
+.added-list.open {
+    margin-top: 20px;
+    max-height: 600px;
+    opacity: 1;
+    pointer-events: all;
+}

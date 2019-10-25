@@ -1,0 +1,16 @@
+.card__line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: inherit;
+    width: 100px;
+    background: linear-gradient(90deg, #FF9966 0%, #FF5E62 100%);
+}
+
+.card__line_green {
+    background: linear-gradient(360deg, #4FBD32 24.25%, #165600 87.92%);
+}
+
+.card__bottle {
+    overflow: hidden;
+}
