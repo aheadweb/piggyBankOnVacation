@@ -17,13 +17,11 @@ import {
 } from "react-router-dom";
 
 //DataBase
-
-import data from './data';
 import base from './firebase';
+
+
+//Pages
 import AdminPanel from './pages/admin';
-
-
-
 
 class App extends React.Component {
 
@@ -38,24 +36,26 @@ class App extends React.Component {
     "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
   ];
 
-  fakeData = data.october.cards;
   ref = base.ref('/');
   card = base.ref('/cards');
 
 
   componentDidMount() {
-    let monthNumber = new Date().getMonth();
-    let month = this.monthNow(monthNumber);
-
-  
-
     this.card.on('value', snapshot => {
-      let cards = [...snapshot.val()]
+      let cards = [...snapshot.val()];
+      let lastActive = localStorage.getItem('act_month');
+      let month;
+      if(lastActive === null) {
+        let monthNumber = new Date().getMonth();
+        month = this.monthNow(monthNumber);
+      } else {
+        month = lastActive;
+      }
       this.setState({
         cards,
         cardLoaded: true,
         activeMonth: month
-      }, () => console.log(this.state))
+      })
     })
   }
 
@@ -80,12 +80,22 @@ class App extends React.Component {
 
   monthSelect = (e) => {
     let target = e.target;
+    localStorage.setItem('act_month',target.textContent);
     if (target.classList.contains('mounth__item')) {
       this.setState({
         activeMonth: target.textContent
       })
     }
   }
+
+
+  toggleDone = (idItem,idCard)=> {
+    var updates = {};
+    updates['/cards/' + idCard + '/list/' + idItem + '/done'] = !this.state.cards[idCard].list[idItem].done;
+    base.ref().update(updates, () => {
+        alert('Успешно изменнено')
+    })
+}
 
 
 
@@ -101,7 +111,9 @@ class App extends React.Component {
       return data.month === activeMonth
     })
     const card = cardThisMounth.map((dataCard) => {
-      return <Card data={dataCard} key={dataCard.id} />
+      return <Card data={dataCard} 
+                   key={dataCard.id} 
+                   toggleDone={(idItem)=> this.toggleDone(idItem,dataCard.id)}/>
     });
     const cardContent = cardLoaded ? card : <div className={"card__alert"}>Загружаю данные</div>
 

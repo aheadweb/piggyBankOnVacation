@@ -4,7 +4,7 @@ import React from 'react';
 import Mounth from '../../components/mounth';
 
 //Base
-import base from '../../firebase';
+import base, { app } from '../../firebase';
 
 //Style
 import './style.css'
@@ -19,42 +19,104 @@ import {
 
 class AdminPanel extends React.Component {
 
-    onItemChange = (e,idCard,idItem) => {
+
+    state = {
+        isAuth: null,
+        isLoaded: false,
+    }
+
+    componentDidMount() {
+        app.auth().onAuthStateChanged((user) => {
+            if (user) {
+                this.setState({
+                    isAuth: true,
+                    isLoaded: true
+                })
+            } else {
+                this.setState({
+                    isAuth: false,
+                    isLoaded: true
+                })
+            }
+        });
+    }
+
+
+    onItemChange = (e, idCard, idItem) => {
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let money = nodes[1].children[0].value || "";
-        console.log(title,money)
-          var updates = {};
-          updates['/cards/' + idCard + '/list/' + idItem] = {
-              title,
-              money
-         };
-         base.ref().update(updates,()=> {
-             alert('Успешно сохранено')
-         })
+        let done = nodes[2].children[0].checked || false;
+        var updates = {};
+        updates['/cards/' + idCard + '/list/' + idItem] = {
+            title,
+            money,
+            done
+        };
+        base.ref().update(updates, () => {
+            alert('Успешно сохранено')
+        })
     }
 
     onItemAdd = (e, idCard) => {
         let card = this.props.cards.find(card => card.id === idCard);
+        if(card.list === undefined) {
+            card.list = [];
+        }
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let money = nodes[1].children[0].value || "";
+        let done = nodes[2].children[0].checked || false;
+        
         base.ref('/cards/' + idCard + '/list/').set([
             ...card.list,
             {
                 title,
-                money
+                money,
+                done
             }
-        ],()=> {
+        ], () => {
             alert('Добавлено')
         })
     }
 
+    onAuth = (e) => {
+        e.preventDefault();
+        let form = e.target;
+        let log = form.children[0].firstElementChild.value;
+        let pas = form.children[1].firstElementChild.value;
+        app.auth().signInWithEmailAndPassword(log, pas)
+            .catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            if (errorCode === 'auth/wrong-password') {
+                alert('Wrong password.');
+              } else {
+                alert(errorMessage);
+              }
+          });
+    }
 
-    togglePanel(e,id) {
+    onItemDelete(e, idCard, idItem,length) {
+
+        if(length === 1) {
+            base.ref('/cards/' + idCard + '/list/' + idItem).set([
+                {}
+            ],() => {
+                alert('Удалено');
+            })
+        } else {
+            base.ref('/cards/' + idCard + '/list/' + idItem).remove(() => {
+                alert('Удалено');
+            })
+        }
+       
+    }
+
+    togglePanel(e, id) {
         let target = e.target;
-        if(target.className === 'admin-card__wrapper'){
-            
+        if (target.className === 'admin-card__wrapper') {
+
             let children = target.parentElement.children;
             let cardList = children[1];
             let addedList = children[2];
@@ -62,30 +124,69 @@ class AdminPanel extends React.Component {
             cardList.classList.toggle('open');
             addedList.classList.toggle('open');
         }
-        
+
     }
 
     render() {
+
+        if (!this.state.isLoaded) {
+            return(
+                <h1>Сканирую пользователя...</h1>
+            );
+        }
+
+
+        if (!this.state.isAuth) {
+            return (
+                <div className="main">
+                    <div className="auth main__info admin-card__hidden">
+                        <h1>Пользователь не авторизован</h1>
+                        <h2>ВВедите логин и пароль</h2>
+                        <form onSubmit={this.onAuth}>
+                        <label htmlFor={"admin-log"}>
+                            Логин
+                        <input defaultValue="admin" name={"mail"} id={"admin-log"}/>
+                        </label>
+                        <label htmlFor={"admin-pas"}>
+                            Пароль
+                        <input defaultValue="admin" name={"pas"} id={"admin-pas"}/>
+                        </label>
+                        <button type={"submit"}>
+                            Вход
+                        </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
 
         const { activeMonth, mounths, cards, monthSelect } = this.props;
 
         let adminActiveMounth = activeMonth;
 
-        const cardsInMonth = cards.map(({ title, id, need, now, list }) => {
+        const cardsInMonth = cards.map(({ title, id, need, list }) => {
 
-            let listItems = list.map(({ title, money }, i) => {
+            if(list === undefined){
+                list = [];
+            }
+
+            let listItems = list.map(({ title, money, done }, i) => {
                 return (
                     <div className="card__item" key={i}>
                         <label>
                             Заголовок
-                            <input defaultValue={title}/>
+                            <input defaultValue={title} type={"text"}/>
                         </label>
                         <label>
                             Сколько
-                            <input defaultValue={money} />
+                            <input defaultValue={money} type={"number"}/>
                         </label>
-                        <button onClick={(e) => this.onItemChange(e,id,i)}>Сохранить</button>
-                        <button style={{opacity: 0.4}}>Удалить</button>
+                        <label>
+                            Выполнено
+                            <input defaultChecked={done} type={"checkbox"}/>
+                        </label>
+                        <button onClick={(e) => this.onItemChange(e, id, i)}>Сохранить</button>
+                        <button onClick={(e) => this.onItemDelete(e, id, i, list.length)}>Удалить</button>
                     </div>
                 );
             })
@@ -94,10 +195,10 @@ class AdminPanel extends React.Component {
                 <div className="card card_admin" key={id} >
                     <div className="card__list">
                         <div className="card__item card__item_admin" >
-                            <div className="admin-card__wrapper" onClick={(e)=>this.togglePanel(e,id)}>
+                            <div className="admin-card__wrapper" onClick={(e) => this.togglePanel(e, id)}>
                                 <div className="admin-card__title">{title}</div>
                                 <div className="admin-card__update">
-                                    <img src="https://img.icons8.com/carbon-copy/100/000000/approve-and-update.png" />
+                                    <img src="https://img.icons8.com/carbon-copy/100/000000/approve-and-update.png" alt={"Icon"} />
                                 </div>
                             </div>
                             <div className="card__list">
@@ -108,13 +209,17 @@ class AdminPanel extends React.Component {
                                 <div className="admin-card__hidden">
                                     <label>
                                         Заголовок
-                                        <input />
+                                        <input type={"text"}/>
                                     </label>
                                     <label>
                                         Сколько
-                                        <input  />
+                                        <input type={"number"} />
                                     </label>
-                                    <button onClick={(e)=> this.onItemAdd(e,id)}>Сохранить</button>
+                                    <label>
+                                        Выполнено
+                                        <input type={"checkbox"} />
+                                    </label>
+                                    <button onClick={(e) => this.onItemAdd(e, id)}>Сохранить</button>
                                 </div>
                             </div>
                         </div>

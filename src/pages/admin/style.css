@@ -19,6 +19,10 @@
     display: flex;
 }
 
+.admin-card__update {
+    pointer-events: none;
+}
+
 .admin-card__delete img,
 .admin-card__update img {
 
@@ -114,24 +118,39 @@
 
 .card__item_admin .card__list,
 .added-list {
-    max-height: 0px;
-    min-height: 0px;
-    transition: all .4s ease-in;
-    will-change: max-height;
-    margin-bottom: 0;
-    opacity: 0;
-    pointer-events: none;
+    display: none;
 }
  
 .card__item_admin .card__list.open {
-    min-height: 600px;
-    opacity: 1;
-    pointer-events: all;
+    display: flex;
 }
 
 .added-list.open {
+    display: block;
+}
+
+.admin-card__hidden label {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth label {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth input {
+    outline: none;
+}
+
+.auth h1,
+.auth h2 {
     margin-top: 20px;
-    max-height: 600px;
-    opacity: 1;
-    pointer-events: all;
+    margin-bottom: 20px;
 }
