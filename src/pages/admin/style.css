@@ -89,7 +89,8 @@
 }
 
 .card__item_admin .card__item  input,
-.admin-card__hidden input{
+.admin-card__hidden input,
+.card__list_need input{
     border: 1px solid #333;
     border-radius: 20px;
     padding: 12px;
@@ -98,7 +99,8 @@
 }
 
 .card__item_admin .card__item  button,
-.admin-card__hidden button{
+.admin-card__hidden button,
+.card__list_need button{
     background-color: #333;
     border-radius: 3px;
     box-sizing: border-box;
@@ -154,3 +156,10 @@
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+.card__list_need label{
+
+    display: flex;
+    flex-direction: column;
+}
+

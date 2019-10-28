@@ -1,0 +1,4 @@
+.summary-month__line,
+.summary__info {
+    transition: all 1s ease-in;
+}

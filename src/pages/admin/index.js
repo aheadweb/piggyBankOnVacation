@@ -10,7 +10,7 @@ import base, { app } from '../../firebase';
 import './style.css'
 
 
-//Riouting
+//Routing
 
 import {
     BrowserRouter as Router,
@@ -58,16 +58,31 @@ class AdminPanel extends React.Component {
         })
     }
 
+
+    onGoalChange = (e,idCard) => {
+        let nodes = e.target.parentElement.children;
+        let need = nodes[0].children[0].value || 1;
+        var updates = {};
+        updates['/cards/' + idCard + '/need/'] = parseInt(need);
+        base.ref().update(updates, () => {
+            alert('Успешно сохранено')
+        })
+    }
+
     onItemAdd = (e, idCard) => {
         let card = this.props.cards.find(card => card.id === idCard);
         if(card.list === undefined) {
             card.list = [];
         }
+        console.log(...card.list)
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let money = nodes[1].children[0].value || "";
         let done = nodes[2].children[0].checked || false;
-        
+        if(title === "" || money === "") {
+            alert('Поля не заполнены')
+            return;
+        }
         base.ref('/cards/' + idCard + '/list/').set([
             ...card.list,
             {
@@ -119,8 +134,10 @@ class AdminPanel extends React.Component {
 
             let children = target.parentElement.children;
             let cardList = children[1];
-            let addedList = children[2];
+            let cardList2 = children[2];
+            let addedList = children[3];
 
+            cardList2.classList.toggle('open');
             cardList.classList.toggle('open');
             addedList.classList.toggle('open');
         }
@@ -200,6 +217,13 @@ class AdminPanel extends React.Component {
                                 <div className="admin-card__update">
                                     <img src="https://img.icons8.com/carbon-copy/100/000000/approve-and-update.png" alt={"Icon"} />
                                 </div>
+                            </div>
+                            <div className="card__list card__list_need">
+                                <label>
+                                    Цель
+                                        <input type={"number"} placeholder={need}/>
+                                </label>
+                                <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button>
                             </div>
                             <div className="card__list">
                                 {listItems}

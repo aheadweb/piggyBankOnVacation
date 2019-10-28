@@ -29,7 +29,11 @@ class App extends React.Component {
     cards: [],
     cardLoaded: false,
     activeMonth: null,
+    monthTotal: 0,
   }
+
+  monthTotalIteration = 0;
+  monthTotalLocal = 0;
 
   monthNames = [
     "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
@@ -45,7 +49,7 @@ class App extends React.Component {
       let cards = [...snapshot.val()];
       let lastActive = localStorage.getItem('act_month');
       let month;
-      if(lastActive === null) {
+      if (lastActive === null) {
         let monthNumber = new Date().getMonth();
         month = this.monthNow(monthNumber);
       } else {
@@ -80,7 +84,7 @@ class App extends React.Component {
 
   monthSelect = (e) => {
     let target = e.target;
-    localStorage.setItem('act_month',target.textContent);
+    localStorage.setItem('act_month', target.textContent);
     if (target.classList.contains('mounth__item')) {
       this.setState({
         activeMonth: target.textContent
@@ -89,17 +93,13 @@ class App extends React.Component {
   }
 
 
-  toggleDone = (idItem,idCard)=> {
+  toggleDone = (idItem, idCard) => {
     var updates = {};
     updates['/cards/' + idCard + '/list/' + idItem + '/done'] = !this.state.cards[idCard].list[idItem].done;
     base.ref().update(updates, () => {
-        alert('Успешно изменнено')
+      console.log('Успешно изменнено')
     })
-}
-
-
-
-
+  }
 
   render() {
 
@@ -110,10 +110,32 @@ class App extends React.Component {
     const cardThisMounth = cards.filter((data) => {
       return data.month === activeMonth
     })
+
+    let totalMonth = 0;
+
+    let totalAll = 0;
+
+    cards.forEach((card)=>{
+      card.list.forEach(task => {
+        if (task.done) {
+          totalAll += parseInt(task.money);
+        }
+      });
+    })
+
+
     const card = cardThisMounth.map((dataCard) => {
-      return <Card data={dataCard} 
-                   key={dataCard.id} 
-                   toggleDone={(idItem)=> this.toggleDone(idItem,dataCard.id)}/>
+      dataCard.list.forEach(task => {
+        if (task.done) {
+          totalMonth += parseInt(task.money);
+        }
+      });
+
+
+      return <Card data={dataCard}
+        key={dataCard.id}
+        toggleDone={(idItem) => this.toggleDone(idItem, dataCard.id)}
+        setMonthTotal={this.setMonthTotal} />
     });
     const cardContent = cardLoaded ? card : <div className={"card__alert"}>Загружаю данные</div>
 
@@ -125,25 +147,26 @@ class App extends React.Component {
       <Router>
         <Switch>
           <Route extract path="/admin">
-            <AdminPanel 
-                  activeMonth={this.state.activeMonth}
-                  mounths={this.unique(titleMounth)}
-                  cards={cardThisMounth}
-                  monthSelect={this.monthSelect}
-                  />
+            <AdminPanel
+              activeMonth={this.state.activeMonth}
+              mounths={this.unique(titleMounth)}
+              cards={cardThisMounth}
+              monthSelect={this.monthSelect}
+            />
           </Route>
           <Route extract path="/">
             <div className="main">
               <div className="main__title">Всего собрано</div>
-              <Summary />
+              <Summary  totalAll={totalAll}/>
               <div className="main__info">
                 <Mounth activeMonth={this.state.activeMonth}
                   mounths={this.unique(titleMounth)}
                   monthSelect={this.monthSelect} />
               </div>
               <div className="main__info main__info_row">
-                <MonthlyAchievement />
-                <SummaryMonth />
+                <MonthlyAchievement totalMonth={totalMonth} />
+                <SummaryMonth totalMonth={totalMonth}
+                  activeMonth={activeMonth} />
               </div>
               <div className="main__card-list">
                 {cardContent}
