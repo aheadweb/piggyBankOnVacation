@@ -7,10 +7,11 @@ function Mounth(props) {
 
   const {activeMonth, mounths, monthSelect} = props;
   
- 
-
-
-  const mounthsList = mounths.map((mounths,i) => <li key={i+mounths} className="mounth__item">{mounths}</li>)
+  const mounthsList = mounths.map((mounths,i) => {
+    if(mounths !== activeMonth){
+      return <li key={i+mounths} className="mounth__item">{mounths}</li>
+    }
+  })
 
 
   const [statusSelect,setStatusSelect] = useState('mounth')

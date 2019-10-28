@@ -32,13 +32,10 @@ class App extends React.Component {
     monthTotal: 0,
   }
 
-  monthTotalIteration = 0;
-  monthTotalLocal = 0;
 
-  monthNames = [
-    "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-    "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-  ];
+  
+  monthNames = ["Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь",
+                "Январь","Февраль","Март","Апрель","Май","Июнь"];
 
   ref = base.ref('/');
   card = base.ref('/cards');
@@ -79,9 +76,6 @@ class App extends React.Component {
     return result;
   }
 
-
-
-
   monthSelect = (e) => {
     let target = e.target;
     localStorage.setItem('act_month', target.textContent);
@@ -101,16 +95,35 @@ class App extends React.Component {
     })
   }
 
+
+  findIndexMonth(activeMonth) {
+    if(activeMonth === null) {
+      return []
+    }
+    let end = this.monthNames.findIndex((month)=> month === activeMonth);
+    let arr = [];
+    for(let i = 0; i <end; i++) {
+      arr.push(this.monthNames[i])
+    }
+
+    return arr;
+  }
+
+
+
   render() {
 
     const { cards, activeMonth, cardLoaded } = this.state
+
+
 
 
     //Вывод карточки по месяцу который сейчас
     const cardThisMounth = cards.filter((data) => {
       return data.month === activeMonth
     })
-
+    
+    
     let totalMonth = 0;
 
     let totalAll = 0;
@@ -123,26 +136,31 @@ class App extends React.Component {
       });
     })
 
+    
+
 
     const card = cardThisMounth.map((dataCard) => {
+
       dataCard.list.forEach(task => {
         if (task.done) {
           totalMonth += parseInt(task.money);
         }
       });
 
-
+      
       return <Card data={dataCard}
         key={dataCard.id}
         toggleDone={(idItem) => this.toggleDone(idItem, dataCard.id)}
         setMonthTotal={this.setMonthTotal} />
     });
+
+
     const cardContent = cardLoaded ? card : <div className={"card__alert"}>Загружаю данные</div>
 
-
+    
     //Смотрим какие месяца есть в базе
     const titleMounth = cards.map(card => card.month)
-
+    
     return (
       <Router>
         <Switch>

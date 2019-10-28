@@ -2,6 +2,7 @@ import React from 'react';
 
 //Components
 import Mounth from '../../components/mounth';
+import AdminCardListItemTech from '../../components/admin-card-list-item-tech';
 
 //Base
 import base, { app } from '../../firebase';
@@ -17,6 +18,8 @@ import {
     Switch, Route
 } from "react-router-dom";
 
+
+
 class AdminPanel extends React.Component {
 
 
@@ -24,6 +27,8 @@ class AdminPanel extends React.Component {
         isAuth: null,
         isLoaded: false,
     }
+
+    isTech = false;
 
     componentDidMount() {
         app.auth().onAuthStateChanged((user) => {
@@ -69,12 +74,23 @@ class AdminPanel extends React.Component {
         })
     }
 
+    onGoalTechChange = (e,idCard) => {
+        let nodes = e.target.parentElement.children;
+        let need = nodes[0].children[0].value || 1;
+        let now = nodes[1].children[0].value || 1;
+        var updates = {};
+        updates['/cards/' + idCard + '/need/'] = parseInt(need);
+        updates['/cards/' + idCard + '/now/'] = parseInt(now);
+        base.ref().update(updates, () => {
+            alert('Успешно сохранено')
+        })
+    }
+
     onItemAdd = (e, idCard) => {
         let card = this.props.cards.find(card => card.id === idCard);
         if(card.list === undefined) {
             card.list = [];
-        }
-        console.log(...card.list)
+        }        
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let money = nodes[1].children[0].value || "";
@@ -89,6 +105,34 @@ class AdminPanel extends React.Component {
                 title,
                 money,
                 done
+            }
+        ], () => {
+            alert('Добавлено')
+        })
+    }
+
+    onItemAddTech = (e, idCard) => {
+        let card = this.props.cards.find(card => card.id === idCard);
+        if(card.list === undefined) {
+            card.list = [];
+        }        
+        let nodes = e.target.parentElement.children;
+        let title = nodes[0].children[0].value || "";
+        let from = nodes[1].children[0].value || 0;
+        let to = nodes[2].children[0].value || 0;
+        let done = nodes[3].children[0].checked || false;
+        if(title === "") {
+            alert('Поля не заполнены')
+            return;
+        }
+        base.ref('/cards/' + idCard + '/list/').set([
+            ...card.list,
+            {
+                title,
+                money: 0,
+                done,
+                from,
+                to
             }
         ], () => {
             alert('Добавлено')
@@ -113,7 +157,6 @@ class AdminPanel extends React.Component {
     }
 
     onItemDelete(e, idCard, idItem,length) {
-
         if(length === 1) {
             base.ref('/cards/' + idCard + '/list/' + idItem).set([
                 {}
@@ -125,7 +168,6 @@ class AdminPanel extends React.Component {
                 alert('Удалено');
             })
         }
-       
     }
 
     togglePanel(e, id) {
@@ -142,6 +184,28 @@ class AdminPanel extends React.Component {
             addedList.classList.toggle('open');
         }
 
+    }
+
+
+    onSaveTech(e,idCard,idItem) {
+        
+        let nodes = e.target.parentElement.children;
+        let title = nodes[0].children[0].value || "";
+        let from = nodes[1].children[0].value || 0;
+        let to = nodes[2].children[0].value || 0;
+        let done = nodes[3].children[0].checked || false;
+        var updates = {};
+        updates['/cards/' + idCard + '/list/' + idItem] = {
+            title,
+            from,
+            to,
+            done,
+            money: 0
+
+        };
+        base.ref().update(updates, () => {
+            alert('Успешно сохранено')
+        })
     }
 
     render() {
@@ -181,13 +245,28 @@ class AdminPanel extends React.Component {
 
         let adminActiveMounth = activeMonth;
 
-        const cardsInMonth = cards.map(({ title, id, need, list }) => {
+        const cardsInMonth = cards.map(({ title, id, need, list, now }) => {
 
             if(list === undefined){
                 list = [];
             }
 
-            let listItems = list.map(({ title, money, done }, i) => {
+            let listItems = list.map(({ title, money, done,to,from }, i) => {
+
+                if(to) {
+                    this.isTech = true;
+                    return (
+                       <AdminCardListItemTech key={i} 
+                                    to={to} 
+                                    from={from} 
+                                    done={done} 
+                                    title={title}
+                                    onSaveTech={(e)=> this.onSaveTech(e,id,i)}
+                                    onDelTech={(e)=>this.onItemDelete(e,id,i,list.length)}
+                                    />
+                    );
+                }
+
                 return (
                     <div className="card__item" key={i}>
                         <label>
@@ -223,7 +302,11 @@ class AdminPanel extends React.Component {
                                     Цель
                                         <input type={"number"} placeholder={need}/>
                                 </label>
-                                <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button>
+                                {this.isTech ?  <label>
+                                                    Всего
+                                                    <input type={"number"} placeholder={now}/>
+                                                </label> : ' '}
+                                {this.isTech ? <button onClick={(e) => this.onGoalTechChange(e, id)}>Сохранить tech</button> : <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button>}                
                             </div>
                             <div className="card__list">
                                 {listItems}
@@ -235,15 +318,23 @@ class AdminPanel extends React.Component {
                                         Заголовок
                                         <input type={"text"}/>
                                     </label>
-                                    <label>
+                                    {!this.isTech ? <label>
                                         Сколько
                                         <input type={"number"} />
-                                    </label>
+                                    </label> : " "}
+                                    {this.isTech ? <label>
+                                        Потрачено часов 
+                                        <input type={"number"} />
+                                    </label> : " "}
+                                    {this.isTech ? <label>
+                                        Планировалось часов
+                                        <input type={"number"} />
+                                    </label> : " "}
                                     <label>
                                         Выполнено
                                         <input type={"checkbox"} />
                                     </label>
-                                    <button onClick={(e) => this.onItemAdd(e, id)}>Сохранить</button>
+                                    {!this.isTech ? <button onClick={(e) => this.onItemAdd(e, id)}>Сохранить</button> : <button onClick={(e) => this.onItemAddTech(e, id)}>Сохранить tech</button>}
                                 </div>
                             </div>
                         </div>
