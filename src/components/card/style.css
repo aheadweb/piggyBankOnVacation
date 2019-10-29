@@ -14,3 +14,13 @@
 .card__bottle {
     overflow: hidden;
 }
+
+.card__line {
+    background: none;
+    width: auto;
+}
+
+.svg-bottle {
+    transition: width .5s ease-in-out;
+    will-change: width;
+}

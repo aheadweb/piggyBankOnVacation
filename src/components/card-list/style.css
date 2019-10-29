@@ -1,3 +1,62 @@
 .icon-done.desabled {
   background-image: url('../../img/sprites/intermediate-svg/not-done-card.svg');
 }
+
+.card__item span:nth-child(2) {
+  width: auto;
+  border: none;
+  align-self: flex-end;
+}
+
+.card__item span:nth-child(1) {
+  flex-basis: 70%;
+  display: flex;
+  min-width: unset;
+  width: auto;
+  display: block;
+  word-break: unset;
+}
+
+.card__item span:nth-child(1):after {
+  content: "";
+  width: 100%;
+  display: block;
+  border-bottom: 1px dashed #cbccd0;
+}
+
+.card__item span:nth-child(3) {
+  width: 36px;
+  min-width: unset;
+}
+
+.main__card-list .card__item {
+  justify-content: space-between;
+}
+
+.card__item_tech-more {
+  color: #6036AB;
+}
+
+
+.card__item_tech-more span:nth-child(1):after {
+  border-color: #6036AB;
+}
+
+.card__item_tech-more .icon-done {
+  background: url('../../img/sprites/intermediate-svg/tech-more.svg');
+  background-repeat: no-repeat;
+}
+
+.card__item_tech-more .icon-done.desabled {
+  background: url('../../img/sprites/intermediate-svg/not-done-card.svg');
+  background-repeat: no-repeat;
+}
+
+
+.card__item_tech-more span:nth-child(3) {
+  margin: 0 3px;
+}
+
+.card__list_tech .card__item span:nth-child(1) {
+  flex-basis: 60%;
+}

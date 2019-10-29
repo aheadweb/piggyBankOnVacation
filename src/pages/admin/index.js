@@ -61,6 +61,7 @@ class AdminPanel extends React.Component {
         base.ref().update(updates, () => {
             alert('Успешно сохранено')
         })
+        this.isTech = false;
     }
 
 
@@ -72,6 +73,7 @@ class AdminPanel extends React.Component {
         base.ref().update(updates, () => {
             alert('Успешно сохранено')
         })
+        this.isTech = false;
     }
 
     onGoalTechChange = (e,idCard) => {
@@ -84,6 +86,7 @@ class AdminPanel extends React.Component {
         base.ref().update(updates, () => {
             alert('Успешно сохранено')
         })
+        this.isTech = false;
     }
 
     onItemAdd = (e, idCard) => {
@@ -109,6 +112,7 @@ class AdminPanel extends React.Component {
         ], () => {
             alert('Добавлено')
         })
+        this.isTech = false;
     }
 
     onItemAddTech = (e, idCard) => {
@@ -137,6 +141,7 @@ class AdminPanel extends React.Component {
         ], () => {
             alert('Добавлено')
         })
+        this.isTech = false;
     }
 
     onAuth = (e) => {
@@ -154,6 +159,7 @@ class AdminPanel extends React.Component {
                 alert(errorMessage);
               }
           });
+          this.isTech = false;
     }
 
     onItemDelete(e, idCard, idItem,length) {
@@ -168,6 +174,7 @@ class AdminPanel extends React.Component {
                 alert('Удалено');
             })
         }
+        this.isTech = false;
     }
 
     togglePanel(e, id) {
@@ -287,6 +294,7 @@ class AdminPanel extends React.Component {
                 );
             })
 
+
             return (
                 <div className="card card_admin" key={id} >
                     <div className="card__list">
@@ -306,7 +314,7 @@ class AdminPanel extends React.Component {
                                                     Всего
                                                     <input type={"number"} placeholder={now}/>
                                                 </label> : ' '}
-                                {this.isTech ? <button onClick={(e) => this.onGoalTechChange(e, id)}>Сохранить tech</button> : <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button>}                
+                                {!this.isTech ? <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button>: <button onClick={(e) => this.onGoalTechChange(e, id)}>Сохранить tech</button>}                
                             </div>
                             <div className="card__list">
                                 {listItems}

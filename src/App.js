@@ -129,6 +129,11 @@ class App extends React.Component {
     let totalAll = 0;
 
     cards.forEach((card)=>{
+
+      if(card.list === undefined){
+        card.list = []
+      }
+
       card.list.forEach(task => {
         if (task.done) {
           totalAll += parseInt(task.money);

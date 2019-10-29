@@ -10,14 +10,22 @@ function CardListItem(props) {
 
   const className = done ? "icon-done" :"icon-done desabled";
   
+
+
   if(props.list.to){
+
+    let styles = "card__item";
+
+    if(props.list.from > props.list.to) {
+      styles = "card__item card__item_tech-more" 
+    }
+
     return (
-      <div className="card__item" >
+      <div className={styles} >
         <span>{title}</span>
-        <span></span>
-        <span>{props.list.from}</span>
-        <span>из</span>
-        <span>{props.list.to}</span>
+        <span>{props.list.from}ч</span>
+        <span style={{width: "unset"}}>из</span>
+        <span style={{alignSelf: "flex-end"}}>{props.list.to}ч</span>
         <span className={className} onClick={props.toggleDone}></span>
       </div>
     );
@@ -27,7 +35,6 @@ function CardListItem(props) {
   return (
     <div className="card__item" >
       <span>{title}</span>
-      <span></span>
       <span>{money}</span>
       <span className={className} onClick={props.toggleDone}></span>
     </div>
