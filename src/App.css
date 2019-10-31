@@ -2,3 +2,15 @@
 .summary__info {
     transition: all 1s ease-in;
 }
+
+.main__footer {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+.link-to-admin {
+    text-decoration: none;
+    color: #333;
+}

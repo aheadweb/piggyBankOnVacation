@@ -13,7 +13,7 @@ import Card from './components/card';
 
 import {
   BrowserRouter as Router,
-  Switch, Route
+  Switch, Route, Link
 } from "react-router-dom";
 
 //DataBase
@@ -36,6 +36,9 @@ class App extends React.Component {
   
   monthNames = ["Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь",
                 "Январь","Февраль","Март","Апрель","Май","Июнь"];
+              
+  monthNamesForLocal = ["Январь","Февраль","Март","Апрель","Май","Июнь",
+                "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 
   ref = base.ref('/');
   card = base.ref('/cards');
@@ -62,7 +65,7 @@ class App extends React.Component {
 
 
   monthNow(month) {
-    return this.monthNames[month];
+    return this.monthNamesForLocal[month];
   }
 
 
@@ -110,14 +113,49 @@ class App extends React.Component {
   }
 
 
+  getMonthTotal(cards) {
+    let month = this.findIndexMonth(this.state.activeMonth);
+    let total = 0;
+    for(let i = 0; i < month.length; i++) {
+
+      for(let j = 0; j < cards.length; j ++) {  
+        if(cards[j].month === month[i]){       
+          
+          
+          let list = cards[j].list;
+          let once = true;
+          
+          for(let k = 0; k < list.length; k ++){
+
+          
+
+            if(list[k] === undefined){
+              return
+            }
+
+
+            if(list[k].done){
+              total += parseInt(list[k].money);
+            }
+
+            if(list[k].to && once){
+              total += parseInt(cards[j].now);
+              once = false;
+            }
+          }
+
+        }
+      }
+    }
+    return total
+  }
+
 
   render() {
 
     const { cards, activeMonth, cardLoaded } = this.state
 
-
-
-
+    let totalForLastMonths = this.getMonthTotal(cards);
     //Вывод карточки по месяцу который сейчас
     const cardThisMounth = cards.filter((data) => {
       return data.month === activeMonth
@@ -125,6 +163,8 @@ class App extends React.Component {
     
     
     let totalMonth = 0;
+
+   
 
     let totalAll = 0;
 
@@ -134,9 +174,15 @@ class App extends React.Component {
         card.list = []
       }
 
+      let once = true;
       card.list.forEach(task => {
         if (task.done) {
           totalAll += parseInt(task.money);
+        }
+        
+        if (task.to && once) {
+          totalAll += parseInt(card.now);
+          once = false;
         }
       });
     })
@@ -146,12 +192,19 @@ class App extends React.Component {
 
     const card = cardThisMounth.map((dataCard) => {
 
+      let once = true;
       dataCard.list.forEach(task => {
         if (task.done) {
           totalMonth += parseInt(task.money);
         }
-      });
+        if (task.to && once) {
+          totalMonth += parseInt(dataCard.now);
+          once = false;
+        }
+        
 
+      });
+      
       
       return <Card data={dataCard}
         key={dataCard.id}
@@ -188,11 +241,14 @@ class App extends React.Component {
               </div>
               <div className="main__info main__info_row">
                 <MonthlyAchievement totalMonth={totalMonth} />
-                <SummaryMonth totalMonth={totalMonth}
+                <SummaryMonth totalMonth={totalMonth + totalForLastMonths}
                   activeMonth={activeMonth} />
               </div>
               <div className="main__card-list">
                 {cardContent}
+              </div>
+              <div className={"main__card-list main__footer "}>
+                <Link className={"link-to-admin"} to="/admin">Панель управления</Link>
               </div>
             </div>
           </Route>

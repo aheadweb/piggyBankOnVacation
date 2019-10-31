@@ -44,6 +44,7 @@ class AdminPanel extends React.Component {
                 })
             }
         });
+        this.isTech = false;
     }
 
 
@@ -65,7 +66,7 @@ class AdminPanel extends React.Component {
     }
 
 
-    onGoalChange = (e,idCard) => {
+    onGoalChange = (e, idCard) => {
         let nodes = e.target.parentElement.children;
         let need = nodes[0].children[0].value || 1;
         var updates = {};
@@ -76,7 +77,7 @@ class AdminPanel extends React.Component {
         this.isTech = false;
     }
 
-    onGoalTechChange = (e,idCard) => {
+    onGoalTechChange = (e, idCard) => {
         let nodes = e.target.parentElement.children;
         let need = nodes[0].children[0].value || 1;
         let now = nodes[1].children[0].value || 1;
@@ -91,14 +92,14 @@ class AdminPanel extends React.Component {
 
     onItemAdd = (e, idCard) => {
         let card = this.props.cards.find(card => card.id === idCard);
-        if(card.list === undefined) {
+        if (card.list === undefined) {
             card.list = [];
-        }        
+        }
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let money = nodes[1].children[0].value || "";
         let done = nodes[2].children[0].checked || false;
-        if(title === "" || money === "") {
+        if (title === "" || money === "") {
             alert('Поля не заполнены')
             return;
         }
@@ -117,15 +118,15 @@ class AdminPanel extends React.Component {
 
     onItemAddTech = (e, idCard) => {
         let card = this.props.cards.find(card => card.id === idCard);
-        if(card.list === undefined) {
+        if (card.list === undefined) {
             card.list = [];
-        }        
+        }
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let from = nodes[1].children[0].value || 0;
         let to = nodes[2].children[0].value || 0;
         let done = nodes[3].children[0].checked || false;
-        if(title === "") {
+        if (title === "") {
             alert('Поля не заполнены')
             return;
         }
@@ -150,23 +151,23 @@ class AdminPanel extends React.Component {
         let log = form.children[0].firstElementChild.value;
         let pas = form.children[1].firstElementChild.value;
         app.auth().signInWithEmailAndPassword(log, pas)
-            .catch(function(error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            if (errorCode === 'auth/wrong-password') {
-                alert('Wrong password.');
-              } else {
-                alert(errorMessage);
-              }
-          });
-          this.isTech = false;
+            .catch(function (error) {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                if (errorCode === 'auth/wrong-password') {
+                    alert('Wrong password.');
+                } else {
+                    alert(errorMessage);
+                }
+            });
+        this.isTech = false;
     }
 
-    onItemDelete(e, idCard, idItem,length) {
-        if(length === 1) {
+    onItemDelete(e, idCard, idItem, length) {
+        if (length === 1) {
             base.ref('/cards/' + idCard + '/list/' + idItem).set([
                 {}
-            ],() => {
+            ], () => {
                 alert('Удалено');
             })
         } else {
@@ -194,8 +195,8 @@ class AdminPanel extends React.Component {
     }
 
 
-    onSaveTech(e,idCard,idItem) {
-        
+    onSaveTech(e, idCard, idItem) {
+
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let from = nodes[1].children[0].value || 0;
@@ -213,12 +214,18 @@ class AdminPanel extends React.Component {
         base.ref().update(updates, () => {
             alert('Успешно сохранено')
         })
+        this.isTech = false;
+    }
+
+    monthSelectCard = (e) => {
+        this.props.monthSelect(e)
+        this.isTech = false;
     }
 
     render() {
 
         if (!this.state.isLoaded) {
-            return(
+            return (
                 <h1>Сканирую пользователя...</h1>
             );
         }
@@ -231,16 +238,16 @@ class AdminPanel extends React.Component {
                         <h1>Пользователь не авторизован</h1>
                         <h2>ВВедите логин и пароль</h2>
                         <form onSubmit={this.onAuth}>
-                        <label htmlFor={"admin-log"}>
-                            Логин
-                        <input defaultValue="admin" name={"mail"} id={"admin-log"}/>
-                        </label>
-                        <label htmlFor={"admin-pas"}>
-                            Пароль
-                        <input defaultValue="admin" name={"pas"} id={"admin-pas"}/>
-                        </label>
-                        <button type={"submit"}>
-                            Вход
+                            <label htmlFor={"admin-log"}>
+                                Логин
+                        <input defaultValue="admin" name={"mail"} id={"admin-log"} />
+                            </label>
+                            <label htmlFor={"admin-pas"}>
+                                Пароль
+                        <input defaultValue="admin" name={"pas"} id={"admin-pas"} />
+                            </label>
+                            <button type={"submit"}>
+                                Вход
                         </button>
                         </form>
                     </div>
@@ -248,29 +255,31 @@ class AdminPanel extends React.Component {
             );
         }
 
+    
+
         const { activeMonth, mounths, cards, monthSelect } = this.props;
 
         let adminActiveMounth = activeMonth;
 
         const cardsInMonth = cards.map(({ title, id, need, list, now }) => {
 
-            if(list === undefined){
+            if (list === undefined) {
                 list = [];
             }
 
-            let listItems = list.map(({ title, money, done,to,from }, i) => {
+            let listItems = list.map(({ title, money, done, to, from }, i) => {
 
-                if(to) {
+                if (to) {
                     this.isTech = true;
                     return (
-                       <AdminCardListItemTech key={i} 
-                                    to={to} 
-                                    from={from} 
-                                    done={done} 
-                                    title={title}
-                                    onSaveTech={(e)=> this.onSaveTech(e,id,i)}
-                                    onDelTech={(e)=>this.onItemDelete(e,id,i,list.length)}
-                                    />
+                        <AdminCardListItemTech key={i}
+                            to={to}
+                            from={from}
+                            done={done}
+                            title={title}
+                            onSaveTech={(e) => this.onSaveTech(e, id, i)}
+                            onDelTech={(e) => this.onItemDelete(e, id, i, list.length)}
+                        />
                     );
                 }
 
@@ -278,15 +287,15 @@ class AdminPanel extends React.Component {
                     <div className="card__item" key={i}>
                         <label>
                             Заголовок
-                            <input defaultValue={title} type={"text"}/>
+                            <input defaultValue={title} type={"text"} />
                         </label>
                         <label>
                             Сколько
-                            <input defaultValue={money} type={"number"}/>
+                            <input defaultValue={money} type={"number"} />
                         </label>
                         <label>
                             Выполнено
-                            <input defaultChecked={done} type={"checkbox"}/>
+                            <input defaultChecked={done} type={"checkbox"} />
                         </label>
                         <button onClick={(e) => this.onItemChange(e, id, i)}>Сохранить</button>
                         <button onClick={(e) => this.onItemDelete(e, id, i, list.length)}>Удалить</button>
@@ -308,13 +317,13 @@ class AdminPanel extends React.Component {
                             <div className="card__list card__list_need">
                                 <label>
                                     Цель
-                                        <input type={"number"} placeholder={need}/>
+                                        <input type={"number"} placeholder={need} />
                                 </label>
-                                {this.isTech ?  <label>
-                                                    Всего
-                                                    <input type={"number"} placeholder={now}/>
-                                                </label> : ' '}
-                                {!this.isTech ? <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button>: <button onClick={(e) => this.onGoalTechChange(e, id)}>Сохранить tech</button>}                
+                                {this.isTech ? <label>
+                                    Всего
+                                                    <input type={"number"} placeholder={now} />
+                                </label> : ' '}
+                                {!this.isTech ? <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button> : <button onClick={(e) => this.onGoalTechChange(e, id)}>Сохранить tech</button>}
                             </div>
                             <div className="card__list">
                                 {listItems}
@@ -324,14 +333,14 @@ class AdminPanel extends React.Component {
                                 <div className="admin-card__hidden">
                                     <label>
                                         Заголовок
-                                        <input type={"text"}/>
+                                        <input type={"text"} />
                                     </label>
                                     {!this.isTech ? <label>
                                         Сколько
                                         <input type={"number"} />
                                     </label> : " "}
                                     {this.isTech ? <label>
-                                        Потрачено часов 
+                                        Потрачено часов
                                         <input type={"number"} />
                                     </label> : " "}
                                     {this.isTech ? <label>
@@ -353,24 +362,18 @@ class AdminPanel extends React.Component {
         })
 
         return (
-            <Router>
-                <Switch>
-                    <Route extract path="/admin">
-                        <div className="main">
-                            <div className="main__title main__title_admin">Страница панели управления</div>
-                            <div className="main__info">
-                                <Mounth activeMonth={adminActiveMounth}
-                                    mounths={mounths}
-                                    monthSelect={monthSelect}
-                                />
-                            </div>
-                            <div className="main__info">
-                                {cardsInMonth}
-                            </div>
-                        </div>
-                    </Route>
-                </Switch>
-            </Router>
+            <div className="main">
+                <div className="main__title main__title_admin">Страница панели управления</div>
+                <div className="main__info">
+                    <Mounth activeMonth={adminActiveMounth}
+                        mounths={mounths}
+                        monthSelect={this.monthSelectCard}
+                    />
+                </div>
+                <div className="main__info">
+                    {cardsInMonth}
+                </div>
+            </div>
 
         );
     }
