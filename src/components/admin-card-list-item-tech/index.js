@@ -3,7 +3,7 @@ import React from 'react';
 
 function AdminCardListItemTech(props) {
 
-    const { done,to,from, title, onSaveTech, onItemDelete} = props;
+    const { done,to,from, title, onSaveTech, onDelTech} = props;
 
     return(
         <div className="card__item">
@@ -24,7 +24,7 @@ function AdminCardListItemTech(props) {
             <input defaultChecked={done} type={"checkbox"}/>
         </label>
         <button onClick={(e)=> onSaveTech(e)} >Сохранить</button>
-        <button onClick={(e)=> onItemDelete(e)}>Удалить</button>
+        <button onClick={(e)=> onDelTech(e)}>Удалить</button>
     </div>
     );
 }

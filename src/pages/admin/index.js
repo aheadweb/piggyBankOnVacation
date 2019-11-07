@@ -9,16 +9,12 @@ import base, { app } from '../../firebase';
 
 //Style
 import './style.css'
+import AdminCardListItem from '../../components/admin-card-list-item';
+import AddedList from '../../components/admin-card-list-added';
+import Auth from '../../components/admin-auth';
 
 
 //Routing
-
-import {
-    BrowserRouter as Router,
-    Switch, Route
-} from "react-router-dom";
-
-
 
 class AdminPanel extends React.Component {
 
@@ -103,8 +99,13 @@ class AdminPanel extends React.Component {
             alert('Поля не заполнены')
             return;
         }
+
+        let newCard = card.list.filter(
+            function(el) { return el; }
+        )
+
         base.ref('/cards/' + idCard + '/list/').set([
-            ...card.list,
+            ...newCard,
             {
                 title,
                 money,
@@ -117,10 +118,20 @@ class AdminPanel extends React.Component {
     }
 
     onItemAddTech = (e, idCard) => {
-        let card = this.props.cards.find(card => card.id === idCard);
+        
+        let card = this.props.cards.find((card)=> {
+            return card.id === idCard;
+        });
         if (card.list === undefined) {
             card.list = [];
         }
+        
+
+        let newCard = card.list.filter(
+            function(el) { return el; }
+        )
+
+    
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
         let from = nodes[1].children[0].value || 0;
@@ -130,8 +141,10 @@ class AdminPanel extends React.Component {
             alert('Поля не заполнены')
             return;
         }
+
+        
         base.ref('/cards/' + idCard + '/list/').set([
-            ...card.list,
+            ...newCard,
             {
                 title,
                 money: 0,
@@ -233,31 +246,14 @@ class AdminPanel extends React.Component {
 
         if (!this.state.isAuth) {
             return (
-                <div className="main">
-                    <div className="auth main__info admin-card__hidden">
-                        <h1>Пользователь не авторизован</h1>
-                        <h2>ВВедите логин и пароль</h2>
-                        <form onSubmit={this.onAuth}>
-                            <label htmlFor={"admin-log"}>
-                                Логин
-                        <input defaultValue="admin" name={"mail"} id={"admin-log"} />
-                            </label>
-                            <label htmlFor={"admin-pas"}>
-                                Пароль
-                        <input defaultValue="admin" name={"pas"} id={"admin-pas"} />
-                            </label>
-                            <button type={"submit"}>
-                                Вход
-                        </button>
-                        </form>
-                    </div>
-                </div>
+                <Auth onSubmit={this.onAuth}
+                />
             );
         }
 
     
 
-        const { activeMonth, mounths, cards, monthSelect } = this.props;
+        const { activeMonth, mounths, cards } = this.props;
 
         let adminActiveMounth = activeMonth;
 
@@ -284,22 +280,13 @@ class AdminPanel extends React.Component {
                 }
 
                 return (
-                    <div className="card__item" key={i}>
-                        <label>
-                            Заголовок
-                            <input defaultValue={title} type={"text"} />
-                        </label>
-                        <label>
-                            Сколько
-                            <input defaultValue={money} type={"number"} />
-                        </label>
-                        <label>
-                            Выполнено
-                            <input defaultChecked={done} type={"checkbox"} />
-                        </label>
-                        <button onClick={(e) => this.onItemChange(e, id, i)}>Сохранить</button>
-                        <button onClick={(e) => this.onItemDelete(e, id, i, list.length)}>Удалить</button>
-                    </div>
+                    <AdminCardListItem  key={i}
+                        done={done}
+                        money={money}
+                        title={title}
+                        onSave={(e) => this.onItemChange(e, id, i)}
+                        onDel={(e) => this.onItemDelete(e, id, i, list.length)}
+                    />
                 );
             })
 
@@ -328,32 +315,11 @@ class AdminPanel extends React.Component {
                             <div className="card__list">
                                 {listItems}
                             </div>
-                            <div className="added-list">
-                                <div className="aded-list__btn">Добавить новый</div>
-                                <div className="admin-card__hidden">
-                                    <label>
-                                        Заголовок
-                                        <input type={"text"} />
-                                    </label>
-                                    {!this.isTech ? <label>
-                                        Сколько
-                                        <input type={"number"} />
-                                    </label> : " "}
-                                    {this.isTech ? <label>
-                                        Потрачено часов
-                                        <input type={"number"} />
-                                    </label> : " "}
-                                    {this.isTech ? <label>
-                                        Планировалось часов
-                                        <input type={"number"} />
-                                    </label> : " "}
-                                    <label>
-                                        Выполнено
-                                        <input type={"checkbox"} />
-                                    </label>
-                                    {!this.isTech ? <button onClick={(e) => this.onItemAdd(e, id)}>Сохранить</button> : <button onClick={(e) => this.onItemAddTech(e, id)}>Сохранить tech</button>}
-                                </div>
-                            </div>
+                            <AddedList 
+                            onItemAdd={(e) => this.onItemAdd(e, id)}
+                            onItemAddTech={(e) => this.onItemAddTech(e, id)}
+                            isTech={this.isTech}/>
+                            
                         </div>
                     </div>
                 </div>

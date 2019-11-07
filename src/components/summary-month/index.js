@@ -33,11 +33,9 @@ function SummaryMonth(props) {
 export default SummaryMonth;
 
 
-
-
 function checkMonthTotal(activeMonth, monthNeed) {
     switch(activeMonth){
-        case "Июнь":
+        case "Июль":
             return monthNeed = monthNeed * 1; 
         case "Агуст":
             return monthNeed = monthNeed * 2; 
@@ -61,6 +59,8 @@ function checkMonthTotal(activeMonth, monthNeed) {
             return monthNeed = monthNeed * 11;
         case "Июнь":
             return monthNeed = monthNeed * 12;
+        default:
+            break;
     }  
 
 };

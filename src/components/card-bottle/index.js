@@ -21,6 +21,8 @@ function Bottle(props) {
     }
     
 
+    let percentText = percent === Infinity ?  "Внезапно" : `${percent}%` ;
+
 
     return (
         <div className="card__bottle" style={styleFullyBottle}>
@@ -36,7 +38,7 @@ function Bottle(props) {
                 </svg>
                 {bottleColor === "full" ? <svg width="57" height="47" fill="none" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0)"><path d="M30.176 39.845a4.567 4.567 0 004.82-2.869l8.826-22.54a4.567 4.567 0 00-1.59-5.379l-4.833-3.468-.123-.048a2.669 2.669 0 00-2.706.433 2.67 2.67 0 00-.936 2.576.59.59 0 01-.228.584l-1.556 1.16a2.685 2.685 0 00-1.042 2.66l.355 1.908a.597.597 0 01-.229.583l-1.556 1.16a2.685 2.685 0 00-1.04 2.66l.353 1.908a.589.589 0 01-.228.584l-1.556 1.16a2.685 2.685 0 00-1.041 2.66l.354 1.908c.04.22-.049.45-.229.583l-1.555 1.16c-.416.311-.724.72-.904 1.18-.18.46-.232.97-.137 1.48l.354 1.908a.59.59 0 01-.229.584 2.67 2.67 0 00-1.062 2.527 2.67 2.67 0 001.693 2.156l.123.048 5.902.734z" fill="#4D25AB"/><path d="M33.5 15.5l6 3.5-6.5-2 .5-1.5zM30.5 23l6 2-5.5-3.5-.5 1.5zM26.5 35.5l5.5 1-5-3-.5 2zM37 9.5l4.5 3.5-5-2 .5-1.5zM28.5 29l6.5 2-5.5-4.5-1 2.5z" fill="#fff"/></g><path stroke="#CBCCD0" d="M.939 14.509l16-3M4.892 18.99l16.279.02M1.081 23.681l16.062 2.651"/><defs><clipPath id="clip0"><path fill="#fff" transform="rotate(111.383 23.845 25.89)" d="M0 0h36v36H0z"/></clipPath></defs></svg> : ""}
             </div>
-            <div className="card__percent" style={bottlePercentStyle}>{percent}%</div>
+            <div className="card__percent" style={bottlePercentStyle}>{percentText}</div>
         </div>
     );
 }

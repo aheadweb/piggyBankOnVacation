@@ -44,7 +44,7 @@ export default class Card extends Component {
         let percent = this.isTech ? Math.floor((now*100)/need) : Math.floor((nowFind*100)/need);        
         let cardNow = this.isTech ? now : nowFind;
         let classTechList = this.isTech ? "card__list card__list_tech": "card__list";
-
+        
         let bottlePx = Math.floor( (percent*320)/100 )
 
         let bottlePercentStyle = {};

@@ -45,7 +45,10 @@ class App extends React.Component {
 
 
   componentDidMount() {
+    
+   
     this.card.on('value', snapshot => {
+      
       let cards = [...snapshot.val()];
       let lastActive = localStorage.getItem('act_month');
       let month;
@@ -61,6 +64,7 @@ class App extends React.Component {
         activeMonth: month
       })
     })
+    
   }
 
 
@@ -119,6 +123,10 @@ class App extends React.Component {
     for(let i = 0; i < month.length; i++) {
 
       for(let j = 0; j < cards.length; j ++) {  
+        if(cards[j] === undefined) {
+          break
+        }
+
         if(cards[j].month === month[i]){       
           
           
@@ -130,7 +138,7 @@ class App extends React.Component {
           
 
             if(list[k] === undefined){
-              return
+              break;
             }
 
 
