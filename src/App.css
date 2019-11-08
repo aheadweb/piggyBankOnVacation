@@ -14,3 +14,7 @@
     text-decoration: none;
     color: #333;
 }
+
+.summary-month__line {
+    max-width: 1280px;
+}

@@ -1,0 +1,26 @@
+.add-month {
+}
+
+.add-month__title {
+    cursor: pointer;
+    font-size: 36px;
+    color: #333;
+
+}
+
+.add-month__form {
+    display: flex;
+    flex-direction: column;
+}
+
+.add-month__selcet {
+   border: 1px solid #333;
+   background-color: #fff;
+   box-shadow: none;
+   outline: none;
+}
+
+.add-month__button {
+    background-color: #fff;
+    box-shadow: 0px 0px 0px 0px #000;
+}

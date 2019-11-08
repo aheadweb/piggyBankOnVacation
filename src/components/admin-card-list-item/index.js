@@ -11,15 +11,17 @@ function AdminCardListItem(props) {
     return (
         <div className="card__item">
             <label>
-                Заголовок
+                <span className="label-title">Заголовок</span>
                 <input defaultValue={title} type={"text"} />
             </label>
             <label>
-                Сколько
+                
+                <span className="label-title">Сколько</span>
                 <input defaultValue={money} type={"number"} />
             </label>
             <label>
-                Выполнено
+                
+                <span className="label-title">Выполнено</span>
                 <input defaultChecked={done} type={"checkbox"} />
             </label>
             <button onClick={(e) => onSave(e)}>Сохранить</button>

@@ -55,8 +55,9 @@
     max-width: unset;
     cursor: pointer;
     display: flex;
-    flex-basis: 50%;
+    flex-basis: 100%;
     margin-bottom: 15px;
+    width: 100%;
     flex-direction: column;
 }
 
@@ -79,8 +80,8 @@
 }
 
 .card__item_admin .card__item  {
-    align-items: center;
     display: flex;
+    flex-wrap: wrap;
 }
 
 .card__item_admin .card__item label,
@@ -96,6 +97,28 @@
     padding: 12px;
     box-sizing: border-box;
     margin: 12px 0;
+}
+
+.kpi-all {
+    margin-right: 15px;
+    max-width: 100px;
+    width: 100px;
+}
+
+.card__item_admin .kpi-all__cost {
+    border: 1px solid #333!important;
+    border-radius: 20px;
+    color: #333;
+    display: inline-block;    
+    padding: 12px 20px;
+    box-sizing: border-box;
+    margin: 12px 0;
+    display: inline-block;
+    background-color: #fff;    
+}
+
+.card__item_admin .kpi-all__title {
+    text-align: left;
 }
 
 .card__item_admin .card__item  button,
@@ -163,3 +186,8 @@
     flex-direction: column;
 }
 
+.main__info_admin {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+}

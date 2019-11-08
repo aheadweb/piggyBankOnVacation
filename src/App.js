@@ -46,7 +46,6 @@ class App extends React.Component {
 
   componentDidMount() {
     
-   
     this.card.on('value', snapshot => {
       
       let cards = [...snapshot.val()];
@@ -163,7 +162,6 @@ class App extends React.Component {
 
     const { cards, activeMonth, cardLoaded } = this.state
 
-    let totalForLastMonths = this.getMonthTotal(cards);
     //Вывод карточки по месяцу который сейчас
     const cardThisMounth = cards.filter((data) => {
       return data.month === activeMonth
@@ -171,9 +169,6 @@ class App extends React.Component {
     
     
     let totalMonth = 0;
-
-   
-
     let totalAll = 0;
 
     cards.forEach((card)=>{
@@ -182,15 +177,9 @@ class App extends React.Component {
         card.list = []
       }
 
-      let once = true;
       card.list.forEach(task => {
         if (task.done) {
           totalAll += parseInt(task.money);
-        }
-        
-        if (task.to && once) {
-          totalAll += parseInt(card.now);
-          once = false;
         }
       });
     })
@@ -200,16 +189,11 @@ class App extends React.Component {
 
     const card = cardThisMounth.map((dataCard) => {
 
-      let once = true;
+      
       dataCard.list.forEach(task => {
         if (task.done) {
           totalMonth += parseInt(task.money);
-        }
-        if (task.to && once) {
-          totalMonth += parseInt(dataCard.now);
-          once = false;
-        }
-        
+        }        
 
       });
       
@@ -236,6 +220,7 @@ class App extends React.Component {
               mounths={this.unique(titleMounth)}
               cards={cardThisMounth}
               monthSelect={this.monthSelect}
+              length={cards.length}
             />
           </Route>
           <Route extract path="/">
@@ -249,7 +234,7 @@ class App extends React.Component {
               </div>
               <div className="main__info main__info_row">
                 <MonthlyAchievement totalMonth={totalMonth} />
-                <SummaryMonth totalMonth={totalMonth + totalForLastMonths}
+                <SummaryMonth totalMonth={totalMonth}
                   activeMonth={activeMonth} />
               </div>
               <div className="main__card-list">

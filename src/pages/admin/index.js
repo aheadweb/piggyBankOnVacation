@@ -12,6 +12,9 @@ import './style.css'
 import AdminCardListItem from '../../components/admin-card-list-item';
 import AddedList from '../../components/admin-card-list-added';
 import Auth from '../../components/admin-auth';
+import AdminCardList from '../../components/admin-card-list';
+import AdminCardListItemKpi from '../../components/admin-card-list-item-kpi';
+import AddNewMonth from '../../components/add-new-month';
 
 
 //Routing
@@ -25,6 +28,7 @@ class AdminPanel extends React.Component {
     }
 
     isTech = false;
+    isKpi = false;
 
     componentDidMount() {
         app.auth().onAuthStateChanged((user) => {
@@ -41,14 +45,15 @@ class AdminPanel extends React.Component {
             }
         });
         this.isTech = false;
+        this.isKpi = false;
     }
 
 
     onItemChange = (e, idCard, idItem) => {
         let nodes = e.target.parentElement.children;
-        let title = nodes[0].children[0].value || "";
-        let money = nodes[1].children[0].value || "";
-        let done = nodes[2].children[0].checked || false;
+        let title = nodes[0].children[1].value || "";
+        let money = nodes[1].children[1].value || "";
+        let done = nodes[2].children[1].checked || false;
         var updates = {};
         updates['/cards/' + idCard + '/list/' + idItem] = {
             title,
@@ -58,7 +63,9 @@ class AdminPanel extends React.Component {
         base.ref().update(updates, () => {
             alert('Успешно сохранено')
         })
+
         this.isTech = false;
+        this.isKpi = false;
     }
 
 
@@ -70,21 +77,11 @@ class AdminPanel extends React.Component {
         base.ref().update(updates, () => {
             alert('Успешно сохранено')
         })
+
         this.isTech = false;
+        this.isKpi = false;
     }
 
-    onGoalTechChange = (e, idCard) => {
-        let nodes = e.target.parentElement.children;
-        let need = nodes[0].children[0].value || 1;
-        let now = nodes[1].children[0].value || 1;
-        var updates = {};
-        updates['/cards/' + idCard + '/need/'] = parseInt(need);
-        updates['/cards/' + idCard + '/now/'] = parseInt(now);
-        base.ref().update(updates, () => {
-            alert('Успешно сохранено')
-        })
-        this.isTech = false;
-    }
 
     onItemAdd = (e, idCard) => {
         let card = this.props.cards.find(card => card.id === idCard);
@@ -101,7 +98,7 @@ class AdminPanel extends React.Component {
         }
 
         let newCard = card.list.filter(
-            function(el) { return el; }
+            function (el) { return el; }
         )
 
         base.ref('/cards/' + idCard + '/list/').set([
@@ -114,47 +111,92 @@ class AdminPanel extends React.Component {
         ], () => {
             alert('Добавлено')
         })
+        this.isKpi = false;
         this.isTech = false;
     }
 
     onItemAddTech = (e, idCard) => {
-        
-        let card = this.props.cards.find((card)=> {
+
+        let card = this.props.cards.find((card) => {
             return card.id === idCard;
         });
         if (card.list === undefined) {
             card.list = [];
         }
-        
+
 
         let newCard = card.list.filter(
-            function(el) { return el; }
+            function (el) { return el; }
         )
 
-    
+
         let nodes = e.target.parentElement.children;
         let title = nodes[0].children[0].value || "";
-        let from = nodes[1].children[0].value || 0;
-        let to = nodes[2].children[0].value || 0;
+        let from = nodes[1].children[0].value || 1;
+        let to = nodes[2].children[0].value || 1;
+        let hoursCost = nodes[3].children[0].value || 1;
+        let done = nodes[4].children[0].checked || false;
+        if (title === "") {
+            alert('Поля не заполнены')
+            return;
+        }
+    
+        base.ref('/cards/' + idCard + '/list/').set([
+            ...newCard,
+            {
+                title,
+                money: parseInt(hoursCost) * parseInt(from),
+                done,
+                from,
+                hoursCost,
+                to
+            }
+        ], () => {
+            alert('Добавлено')
+        })
+
+        this.isKpi = false;
+        this.isTech = false;
+    }
+
+    onItemAddKpi = (e, idCard) => {
+
+        let card = this.props.cards.find((card) => {
+            return card.id === idCard;
+        });
+        if (card.list === undefined) {
+            card.list = [];
+        }
+
+        let newCard = card.list.filter(
+            function (el) { return el; }
+        )
+
+        let nodes = e.target.parentElement.children;
+        let title = nodes[0].children[0].value || "";
+        let kpiHours = nodes[1].children[0].value || 0;
+        let hoursCost = nodes[2].children[0].value || 0;
         let done = nodes[3].children[0].checked || false;
         if (title === "") {
             alert('Поля не заполнены')
             return;
         }
 
-        
+
         base.ref('/cards/' + idCard + '/list/').set([
             ...newCard,
             {
                 title,
-                money: 0,
                 done,
-                from,
-                to
+                money: kpiHours * hoursCost,
+                kpiHours,
+                hoursCost
             }
         ], () => {
             alert('Добавлено')
         })
+
+        this.isKpi = false;
         this.isTech = false;
     }
 
@@ -173,6 +215,8 @@ class AdminPanel extends React.Component {
                     alert(errorMessage);
                 }
             });
+
+        this.isKpi = false;
         this.isTech = false;
     }
 
@@ -188,6 +232,8 @@ class AdminPanel extends React.Component {
                 alert('Удалено');
             })
         }
+
+        this.isKpi = false;
         this.isTech = false;
     }
 
@@ -211,27 +257,61 @@ class AdminPanel extends React.Component {
     onSaveTech(e, idCard, idItem) {
 
         let nodes = e.target.parentElement.children;
-        let title = nodes[0].children[0].value || "";
-        let from = nodes[1].children[0].value || 0;
-        let to = nodes[2].children[0].value || 0;
-        let done = nodes[3].children[0].checked || false;
+        let title = nodes[0].children[1].value || "";
+        let from = nodes[1].children[1].value || 0;
+        let to = nodes[2].children[1].value || 0;
+        let hoursCost = nodes[3].children[1].value || 0;
+        let money = parseInt(nodes[4].children[1].textContent) || 0;
+        let done = nodes[5].children[1].checked || false;
         var updates = {};
+        
         updates['/cards/' + idCard + '/list/' + idItem] = {
             title,
             from,
             to,
             done,
-            money: 0
+            hoursCost,
+            money
 
         };
         base.ref().update(updates, () => {
             alert('Успешно сохранено')
         })
+
+        this.isKpi = false;
         this.isTech = false;
     }
 
+
+    onSaveKpi(e, idCard, idItem) {
+        let nodes = e.target.parentElement.children;
+        let title = nodes[0].children[1].value || "";
+        let kpiHours = nodes[1].children[1].value || 0;
+        let hoursCost = nodes[2].children[1].value || 0;
+        let money = parseInt(nodes[3].children[1].textContent) || 0;
+        let done = nodes[4].children[1].checked || false;
+        var updates = {};        
+        updates['/cards/' + idCard + '/list/' + idItem] = {
+            title,
+            done,
+            money,
+            kpiHours,
+            hoursCost
+
+        };
+        base.ref().update(updates, () => {
+            alert('Успешно сохранено')
+        })
+
+        this.isKpi = false;
+        this.isTech = false;
+    }
+
+
     monthSelectCard = (e) => {
         this.props.monthSelect(e)
+
+        this.isKpi = false;
         this.isTech = false;
     }
 
@@ -251,11 +331,10 @@ class AdminPanel extends React.Component {
             );
         }
 
-    
+
+        let techTotal = 0;        
 
         const { activeMonth, mounths, cards } = this.props;
-
-        let adminActiveMounth = activeMonth;
 
         const cardsInMonth = cards.map(({ title, id, need, list, now }) => {
 
@@ -263,24 +342,40 @@ class AdminPanel extends React.Component {
                 list = [];
             }
 
-            let listItems = list.map(({ title, money, done, to, from }, i) => {
+            let listItems = list.map(({ title, money, done, to, from, kpiHours, hoursCost }, i) => {
 
                 if (to) {
                     this.isTech = true;
+                    techTotal += parseInt(hoursCost * from)
                     return (
-                        <AdminCardListItemTech key={i}
+                        <AdminCardListItemTech key={i + "Tech"}
                             to={to}
                             from={from}
                             done={done}
                             title={title}
+                            cost={hoursCost}
                             onSaveTech={(e) => this.onSaveTech(e, id, i)}
                             onDelTech={(e) => this.onItemDelete(e, id, i, list.length)}
                         />
                     );
                 }
 
+                if (kpiHours) {
+                    this.isKpi = true;
+                    return (
+                        <AdminCardListItemKpi key={i + "Kpi"}
+                            done={done}
+                            title={title}
+                            hours={kpiHours}
+                            cost={hoursCost}
+                            onSaveKpi={(e) => this.onSaveKpi(e, id, i)}
+                            onDelTech={(e) => this.onItemDelete(e, id, i, list.length)}
+                        />
+                    );
+                }
+
                 return (
-                    <AdminCardListItem  key={i}
+                    <AdminCardListItem key={i + "Sample"}
                         done={done}
                         money={money}
                         title={title}
@@ -290,6 +385,26 @@ class AdminPanel extends React.Component {
                 );
             })
 
+            const adminCard = <AdminCardList
+                need={need}
+                now={now}
+                onGoalChange={(e) => this.onGoalChange(e, id)}
+                isTech={this.isTech}
+                isKpi={this.isKpi}
+            />
+
+            const addList = <AddedList
+                onItemAdd={(e) => this.onItemAdd(e, id)}
+                onItemAddTech={(e) => this.onItemAddTech(e, id)}
+                onItemAddKpi={(e) => this.onItemAddKpi(e, id)}
+                isTech={this.isTech}
+                isKpi={this.isKpi}
+            />
+
+            let helpersTotalTech = this.isTech ? <div>Всего {techTotal}</div> : " ";
+
+            this.isKpi = false;
+            this.isTech = false;
 
             return (
                 <div className="card card_admin" key={id} >
@@ -301,39 +416,37 @@ class AdminPanel extends React.Component {
                                     <img src="https://img.icons8.com/carbon-copy/100/000000/approve-and-update.png" alt={"Icon"} />
                                 </div>
                             </div>
-                            <div className="card__list card__list_need">
-                                <label>
-                                    Цель
-                                        <input type={"number"} placeholder={need} />
-                                </label>
-                                {this.isTech ? <label>
-                                    Всего
-                                                    <input type={"number"} placeholder={now} />
-                                </label> : ' '}
-                                {!this.isTech ? <button onClick={(e) => this.onGoalChange(e, id)}>Сохранить</button> : <button onClick={(e) => this.onGoalTechChange(e, id)}>Сохранить tech</button>}
-                            </div>
+
+                            {adminCard}
+
                             <div className="card__list">
                                 {listItems}
+                                {helpersTotalTech}
                             </div>
-                            <AddedList 
-                            onItemAdd={(e) => this.onItemAdd(e, id)}
-                            onItemAddTech={(e) => this.onItemAddTech(e, id)}
-                            isTech={this.isTech}/>
-                            
+                            {addList}
                         </div>
                     </div>
                 </div>
 
             );
+
+
         })
+
+
 
         return (
             <div className="main">
                 <div className="main__title main__title_admin">Страница панели управления</div>
-                <div className="main__info">
-                    <Mounth activeMonth={adminActiveMounth}
+                <div className="main__info main__info_admin">
+                    <Mounth 
+                        activeMonth={activeMonth}
                         mounths={mounths}
                         monthSelect={this.monthSelectCard}
+                    />
+                   <AddNewMonth 
+                        length={this.props.length}
+                        mounths={mounths}
                     />
                 </div>
                 <div className="main__info">

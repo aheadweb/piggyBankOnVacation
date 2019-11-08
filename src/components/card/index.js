@@ -8,8 +8,6 @@ import Bottle from '../card-bottle';
 
 export default class Card extends Component {
 
-    isTech = false;
-
     render() {
 
         
@@ -24,13 +22,12 @@ export default class Card extends Component {
         
 
         let itemsCard = list.map((list, index) => {
+            
             if(list.done){
                 nowFind += parseInt(list.money);
             }
 
-            if(list.from || list.to) {
-                this.isTech = true;
-            }
+    
 
 
             return (
@@ -41,7 +38,7 @@ export default class Card extends Component {
 
         
         
-        let percent = this.isTech ? Math.floor((now*100)/need) : Math.floor((nowFind*100)/need);        
+        let percent = Math.floor((nowFind*100)/need);        
         let cardNow = this.isTech ? now : nowFind;
         let classTechList = this.isTech ? "card__list card__list_tech": "card__list";
         
