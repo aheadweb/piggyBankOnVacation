@@ -18,3 +18,17 @@
 .summary-month__line {
     max-width: 1280px;
 }
+
+.card__item span:nth-child(3) {
+    margin: 0 4px;
+}
+
+@media screen and (max-width: 500px) {
+    .card__bottle {
+        width: 320px!important;
+    }
+    .icon-duck,
+    .summary-month__percent {
+        display: none;
+    }
+}

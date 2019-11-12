@@ -16,7 +16,9 @@ function CardListItem(props) {
 
     let styles = "card__item";
 
-    if(props.list.from > props.list.to) {
+    console.log()
+
+    if(parseInt(props.list.from) > parseInt(props.list.to)) {
       styles = "card__item card__item_tech-more" 
     }
 

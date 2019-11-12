@@ -84,8 +84,8 @@ class App extends React.Component {
 
   monthSelect = (e) => {
     let target = e.target;
-    localStorage.setItem('act_month', target.textContent);
     if (target.classList.contains('mounth__item')) {
+      localStorage.setItem('act_month', target.textContent);
       this.setState({
         activeMonth: target.textContent
       })

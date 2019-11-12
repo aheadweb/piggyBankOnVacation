@@ -2,7 +2,7 @@ import React from 'react';
 
 
 function SummaryMonth(props) {
-    const { totalMonth, activeMonth } = props
+    const { totalMonth } = props
     
     const monthNeed = 25000 ;
     const persent = Math.floor((totalMonth*100)/ monthNeed);
@@ -13,12 +13,13 @@ function SummaryMonth(props) {
     let duckPosition = 0;
 
     if(node !==null) {
-        duckPosition = (totalMonth * node.getBoundingClientRect().width) / monthNeed;
+        //duckPosition = (totalMonth * node.getBoundingClientRect().width) / monthNeed;
+        persent > 100 ? duckPosition = 100 : duckPosition = persent;
     }
 
     return (
         <div className="summary-month">
-            <div className="summary-month__line" style={ {width: `${duckPosition}px`} }>
+            <div className="summary-month__line" style={ {width: `${duckPosition}%`} }>
                 <div className="summary-month__duck">
                     <div className="icon-duck"></div>
                     <div className="summary-month__percent">{persent}%</div>

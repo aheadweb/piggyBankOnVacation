@@ -26,7 +26,6 @@ export default class Card extends Component {
             if(list.done){
                 nowFind += parseInt(list.money);
             }
-
     
 
 
@@ -41,9 +40,9 @@ export default class Card extends Component {
         let percent = Math.floor((nowFind*100)/need);        
         let cardNow = this.isTech ? now : nowFind;
         let classTechList = this.isTech ? "card__list card__list_tech": "card__list";
+        let bottlePx = 0;
+        bottlePx = Math.floor( (percent*320)/100 )
         
-        let bottlePx = Math.floor( (percent*320)/100 )
-
         let bottlePercentStyle = {};
 
         let bottleColor = "";

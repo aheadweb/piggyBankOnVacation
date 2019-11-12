@@ -20,8 +20,7 @@ function Bottle(props) {
         styleFullyBottleLine = {display: "flex", alignItems: "center"};
     }
     
-
-    let percentText = percent === Infinity ?  "Внезапно" : `${percent}%` ;
+    let percentText = percent === Infinity || isNaN(percent) ?  "Внезапно" : `${percent}%`;
 
 
     return (
